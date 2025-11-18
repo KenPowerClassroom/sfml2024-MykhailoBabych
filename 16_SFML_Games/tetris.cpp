@@ -4,6 +4,11 @@ using namespace sf;
 
 const int MAX_ROWS = 20;
 const int MAX_COLUMNS = 10;
+int deltaX = 0;
+bool rotate = 0;
+int colorNum = 1;
+float timer = 0;
+float delay = 0.3;
 
 int field[MAX_ROWS][MAX_COLUMNS] = {0};
 
@@ -35,7 +40,104 @@ bool check()
         }
     }
    return true;
-};
+}
+
+void move()
+{
+    for (int i = 0;i < 4;i++)
+    {
+        backup_coordinates[i] = coordinates[i];
+        coordinates[i].x += deltaX;
+    }
+    if (!check())
+    {
+        for (int i = 0;i < 4;i++)
+        {
+            coordinates[i] = backup_coordinates[i];
+        }
+    }
+}
+
+void rotation()
+{
+    if (rotate)
+    {
+        Point rotationCenter = coordinates[1]; //center of rotation
+        for (int i = 0;i < 4;i++)
+        {
+            int x = coordinates[i].y - rotationCenter.y;
+            int y = coordinates[i].x - rotationCenter.x;
+            coordinates[i].x = rotationCenter.x - x;
+            coordinates[i].y = rotationCenter.y + y;
+        }
+        if (!check())
+        {
+            for (int i = 0;i < 4;i++)
+            {
+                coordinates[i] = backup_coordinates[i];
+            }
+        }
+    }
+}
+
+void ticking()
+{
+    if (timer > delay)
+    {
+        for (int i = 0;i < 4;i++)
+        {
+            backup_coordinates[i] = coordinates[i];
+            coordinates[i].y += 1;
+        }
+
+        if (!check())
+        {
+            for (int i = 0;i < 4;i++)
+            {
+                field[backup_coordinates[i].y][backup_coordinates[i].x] = colorNum;
+            }
+
+            colorNum = 1 + rand() % 7;
+            int nextTetrominoShape = rand() % 7;
+            for (int i = 0;i < 4;i++)
+            {
+                coordinates[i].x = figures[nextTetrominoShape][i] % 2;
+                coordinates[i].y = figures[nextTetrominoShape][i] / 2;
+            }
+        }
+
+        timer = 0;
+    }
+}
+
+void lineCheck()
+{
+	int destRow = MAX_ROWS - 1;
+	for (int i = MAX_ROWS - 1;i > 0;i--)
+	{
+		int count = 0;
+		for (int j = 0;j < MAX_COLUMNS;j++)
+		{
+			if (field[i][j])
+			{
+				count++;
+			}
+			field[destRow][j] = field[i][j];
+		}
+		if (count < MAX_COLUMNS)
+		{
+			destRow--;
+		}
+	}
+}
+
+void reset() 
+{
+    deltaX = 0;
+    rotate = 0;
+    delay = 0.3;
+}
+
 
 int tetris()
 {
@@ -50,15 +152,10 @@ int tetris()
     m_backgroundTexture.loadFromFile("images/tetris/background.png");
     m_frameTexture.loadFromFile("images/tetris/frame.png");
 
+
     Sprite m_tilesSprite(m_tilesTexture);
     Sprite m_backgroundSprite(m_backgroundTexture);
     Sprite m_frameSprite(m_frameTexture);
-
-    int deltaX = 0; 
-    bool rotate = 0; 
-    int colorNum = 1;
-    float timer = 0;
-    float delay = 0.3;
 
     Clock clock;
 
@@ -99,89 +196,18 @@ int tetris()
         }
 
     //// <- Move -> ///
-    for (int i=0;i<4;i++)
-    {
-        backup_coordinates[i]=coordinates[i];
-        coordinates[i].x+=deltaX; 
-    }
-    if (!check())
-    {
-        for (int i = 0;i < 4;i++)
-        {
-            coordinates[i] = backup_coordinates[i];
-        }
-    }
+        move();
 
     //////Rotate//////
-    if (rotate)
-      {
-        Point rotationCenter = coordinates[1]; //center of rotation
-        for (int i=0;i<4;i++)
-          {
-            int x = coordinates[i].y-rotationCenter.y;
-            int y = coordinates[i].x-rotationCenter.x;
-            coordinates[i].x = rotationCenter.x - x;
-            coordinates[i].y = rotationCenter.y + y;
-           }
-        if (!check())
-        {
-            for (int i = 0;i < 4;i++)
-            {
-                coordinates[i] = backup_coordinates[i];
-            }
-        }
-      }
+        rotation();
 
     ///////Tick//////
-    if (timer>delay)
-      {
-        for (int i=0;i<4;i++)
-        {
-            backup_coordinates[i]=coordinates[i]; 
-            coordinates[i].y+=1; 
-        }
-
-        if (!check())
-        {
-            for (int i = 0;i < 4;i++)
-            {
-                field[backup_coordinates[i].y][backup_coordinates[i].x] = colorNum;
-            }
-
-            colorNum=1+rand()%7;
-            int nextTetrominoShape=rand()%7;
-            for (int i=0;i<4;i++)
-            {
-                coordinates[i].x = figures[nextTetrominoShape][i] % 2;
-                coordinates[i].y = figures[nextTetrominoShape][i] / 2;
-            }
-        }
-
-         timer = 0;
-      }
+        ticking();
 
     ///////check lines//////////
-    int destRow = MAX_ROWS - 1;
-    for (int i=MAX_ROWS-1;i>0;i--)
-    {
-        int count=0;
-        for (int j=0;j<MAX_COLUMNS;j++)
-        {
-            if (field[i][j])
-            {
-                count++;
-            }
-            field[destRow][j]=field[i][j];
-        }
-        if (count < MAX_COLUMNS)
-        {
-            destRow--;
-        }
-    }
+		lineCheck();
 
-    deltaX=0;
-    rotate=0; 
-    delay=0.3;
+        reset();
 
     /////////draw//////////
     window.clear(Color::White);    
