@@ -71,7 +71,7 @@ void moveEnemies() {
 
 class Screen {
     RenderWindow window;
-    Texture t1, t2, t3;
+    Texture t1, t2, m_frameTexture;
     //Sprite sTile(t1), sGameover(t2), sEnemy(t3);
     Sprite sTile, sGameover, sEnemy;
 public:
@@ -82,11 +82,11 @@ public:
 
         t1.loadFromFile("images/xonix/tiles.png");
         t2.loadFromFile("images/xonix/gameover.png");
-        t3.loadFromFile("images/xonix/enemy.png");
+        m_frameTexture.loadFromFile("images/xonix/enemy.png");
 
         sTile.setTexture(t1);
         sGameover.setTexture(t2);
-        sEnemy.setTexture(t3);
+        sEnemy.setTexture(m_frameTexture);
 
         sGameover.setPosition(100, 100);
         sEnemy.setOrigin(20, 20);

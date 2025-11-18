@@ -49,13 +49,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\include;C:\Users\C00309423\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\include\SFML;$(SFML_SDK)\include;C:\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\micha\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\include;C:\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\include;C:\Users\C00309423\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\include\SFML;$(SFML_SDK)\include;C:\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\lib;C:\Users\C00309423\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\lib;$(SFML_SDK)\lib;C:\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\micha\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\lib;C:\Users\micha\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\lib\cmake;C:\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\lib;C:\Users\C00309423\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\lib;$(SFML_SDK)\lib;C:\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -66,14 +66,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SFML_SDK)\include;C:\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\micha\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\include;$(SFML_SDK)\include;C:\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SFML_SDK)\lib;C:\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\micha\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\lib;C:\Users\micha\Downloads\SFML-2.5.1-windows-vc14-32-bit\SFML-2.5.1\lib\cmake;$(SFML_SDK)\lib;C:\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

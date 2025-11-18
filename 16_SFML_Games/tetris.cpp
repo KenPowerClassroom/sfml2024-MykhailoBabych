@@ -2,13 +2,13 @@
 #include <time.h>
 using namespace sf;
 
-const int M = 20;
-const int N = 10;
+const int MAX_ROWS = 20;
+const int MAX_COLUMNS = 10;
 
-int field[M][N] = {0};
+int field[MAX_ROWS][MAX_COLUMNS] = {0};
 
 struct Point
-{int x,y;} a[4], b[4];
+{int x,y;} coordinates[4], backup_coordinates[4];
 
 int figures[7][4] =
 {
@@ -23,13 +23,19 @@ int figures[7][4] =
 
 bool check()
 {
-   for (int i=0;i<4;i++)
-      if (a[i].x<0 || a[i].x>=N || a[i].y>=M) return 0;
-      else if (field[a[i].y][a[i].x]) return 0;
-
-   return 1;
+    for (int i = 0;i < 4;i++)
+    {
+        if (coordinates[i].x < 0 || coordinates[i].x >= MAX_COLUMNS || coordinates[i].y >= MAX_ROWS)
+        {
+            return false;
+        }
+        else if (field[coordinates[i].y][coordinates[i].x])
+        {
+            return false;
+        }
+    }
+   return true;
 };
-
 
 int tetris()
 {
@@ -37,15 +43,22 @@ int tetris()
 
     RenderWindow window(VideoMode(320, 480), "The Game!");
 
-    Texture t1,t2,t3;
-    t1.loadFromFile("images/tetris/tiles.png");
-    t2.loadFromFile("images/tetris/background.png");
-    t3.loadFromFile("images/tetris/frame.png");
+    Texture m_tilesTexture;
+    Texture m_backgroundTexture;
+    Texture m_frameTexture;
+    m_tilesTexture.loadFromFile("images/tetris/tiles.png");
+    m_backgroundTexture.loadFromFile("images/tetris/background.png");
+    m_frameTexture.loadFromFile("images/tetris/frame.png");
 
-    Sprite s(t1), background(t2), frame(t3);
+    Sprite m_tilesSprite(m_tilesTexture);
+    Sprite m_backgroundSprite(m_backgroundTexture);
+    Sprite m_frameSprite(m_frameTexture);
 
-    int dx=0; bool rotate=0; int colorNum=1;
-    float timer=0,delay=0.3; 
+    int deltaX = 0; 
+    bool rotate = 0; 
+    int colorNum = 1;
+    float timer = 0;
+    float delay = 0.3;
 
     Clock clock;
 
@@ -53,101 +66,154 @@ int tetris()
     {
         float time = clock.getElapsedTime().asSeconds();
         clock.restart();
-        timer+=time;
+        timer += time;
 
-        Event e;
-        while (window.pollEvent(e))
+        Event m_event;
+        while (window.pollEvent(m_event))
         {
-            if (e.type == Event::Closed)
+            if (m_event.type == Event::Closed)
+            {
                 window.close();
+            }
 
-            if (e.type == Event::KeyPressed)
-              if (e.key.code==Keyboard::Up) rotate=true;
-              else if (e.key.code==Keyboard::Left) dx=-1;
-              else if (e.key.code==Keyboard::Right) dx=1;
+            if (m_event.type == Event::KeyPressed)
+            {
+                if (m_event.key.code == Keyboard::Up)
+                {
+                    rotate = true;
+                }
+                else if (m_event.key.code == Keyboard::Left)
+                {
+                    deltaX = -1;
+                }
+                else if (m_event.key.code == Keyboard::Right)
+                {
+                    deltaX = 1;
+                }
+            }
         }
 
-    if (Keyboard::isKeyPressed(Keyboard::Down)) delay=0.05;
+        if (Keyboard::isKeyPressed(Keyboard::Down))
+        {
+            delay = 0.05;
+        }
 
     //// <- Move -> ///
-    for (int i=0;i<4;i++)  { b[i]=a[i]; a[i].x+=dx; }
-    if (!check()) for (int i=0;i<4;i++) a[i]=b[i];
+    for (int i=0;i<4;i++)
+    {
+        backup_coordinates[i]=coordinates[i];
+        coordinates[i].x+=deltaX; 
+    }
+    if (!check())
+    {
+        for (int i = 0;i < 4;i++)
+        {
+            coordinates[i] = backup_coordinates[i];
+        }
+    }
 
     //////Rotate//////
     if (rotate)
       {
-        Point p = a[1]; //center of rotation
+        Point rotationCenter = coordinates[1]; //center of rotation
         for (int i=0;i<4;i++)
           {
-            int x = a[i].y-p.y;
-            int y = a[i].x-p.x;
-            a[i].x = p.x - x;
-            a[i].y = p.y + y;
+            int x = coordinates[i].y-rotationCenter.y;
+            int y = coordinates[i].x-rotationCenter.x;
+            coordinates[i].x = rotationCenter.x - x;
+            coordinates[i].y = rotationCenter.y + y;
            }
-           if (!check()) for (int i=0;i<4;i++) a[i]=b[i];
+        if (!check())
+        {
+            for (int i = 0;i < 4;i++)
+            {
+                coordinates[i] = backup_coordinates[i];
+            }
+        }
       }
 
     ///////Tick//////
     if (timer>delay)
       {
-        for (int i=0;i<4;i++) { b[i]=a[i]; a[i].y+=1; }
+        for (int i=0;i<4;i++)
+        {
+            backup_coordinates[i]=coordinates[i]; 
+            coordinates[i].y+=1; 
+        }
 
         if (!check())
         {
-         for (int i=0;i<4;i++) field[b[i].y][b[i].x]=colorNum;
+            for (int i = 0;i < 4;i++)
+            {
+                field[backup_coordinates[i].y][backup_coordinates[i].x] = colorNum;
+            }
 
-         colorNum=1+rand()%7;
-         int n=rand()%7;
-         for (int i=0;i<4;i++)
-           {
-            a[i].x = figures[n][i] % 2;
-            a[i].y = figures[n][i] / 2;
-           }
+            colorNum=1+rand()%7;
+            int nextTetrominoShape=rand()%7;
+            for (int i=0;i<4;i++)
+            {
+                coordinates[i].x = figures[nextTetrominoShape][i] % 2;
+                coordinates[i].y = figures[nextTetrominoShape][i] / 2;
+            }
         }
 
-         timer=0;
+         timer = 0;
       }
 
     ///////check lines//////////
-    int k=M-1;
-    for (int i=M-1;i>0;i--)
+    int destRow = MAX_ROWS - 1;
+    for (int i=MAX_ROWS-1;i>0;i--)
     {
         int count=0;
-        for (int j=0;j<N;j++)
+        for (int j=0;j<MAX_COLUMNS;j++)
         {
-            if (field[i][j]) count++;
-            field[k][j]=field[i][j];
+            if (field[i][j])
+            {
+                count++;
+            }
+            field[destRow][j]=field[i][j];
         }
-        if (count<N) k--;
+        if (count < MAX_COLUMNS)
+        {
+            destRow--;
+        }
     }
 
-    dx=0; rotate=0; delay=0.3;
+    deltaX=0;
+    rotate=0; 
+    delay=0.3;
 
     /////////draw//////////
     window.clear(Color::White);    
-    window.draw(background);
+    window.draw(m_backgroundSprite);
           
-    for (int i=0;i<M;i++)
-     for (int j=0;j<N;j++)
-       {
-         if (field[i][j]==0) continue;
-         s.setTextureRect(IntRect(field[i][j]*18,0,18,18));
-         s.setPosition(j*18,i*18);
-         s.move(28,31); //offset
-         window.draw(s);
-       }
+    for (int i = 0;i < MAX_ROWS;i++)
+    {
+        for (int column_index = 0;column_index < MAX_COLUMNS;column_index++)
+        {
+            if (field[i][column_index] == 0)
+            {
+                continue;
+            }
+            m_tilesSprite.setTextureRect(IntRect(field[i][column_index] * 18, 0, 18, 18));
+            m_tilesSprite.setPosition(column_index * 18, i * 18);
+            m_tilesSprite.move(28, 31); //offset
+            window.draw(m_tilesSprite);
+        }
+    }
 
     for (int i=0;i<4;i++)
-      {
-        s.setTextureRect(IntRect(colorNum*18,0,18,18));
-        s.setPosition(a[i].x*18,a[i].y*18);
-        s.move(28,31); //offset
-        window.draw(s);
-      }
+    {
+       m_tilesSprite.setTextureRect(IntRect(colorNum*18,0,18,18));
+       m_tilesSprite.setPosition(coordinates[i].x*18,coordinates[i].y*18);
+       m_tilesSprite.move(28,31); //offset
+       window.draw(m_tilesSprite);
+    }
 
-    window.draw(frame);
+    window.draw(m_frameSprite);
     window.display();
     }
 
     return 0;
 }
+

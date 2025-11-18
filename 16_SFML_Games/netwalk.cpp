@@ -2,7 +2,7 @@
 #include <time.h>
 using namespace sf;
 
-const int N = 6;
+const int MAX_COLUMNS = 6;
 int tsz = 54; //tile size
 Vector2f oset(65,55);
 
@@ -39,15 +39,15 @@ struct pipe
 };
 
 
-pipe grid[N][N];
+pipe grid[MAX_COLUMNS][MAX_COLUMNS];
 pipe& cell(Vector2i v) {return grid[v.x][v.y];}
-bool isOut(Vector2i v) {return !IntRect(0,0,N,N).contains(v);}
+bool isOut(Vector2i v) {return !IntRect(0,0,MAX_COLUMNS,MAX_COLUMNS).contains(v);}
 
 
 void generatePuzzle()
 {
   std::vector<Vector2i> nodes;
-  nodes.push_back(Vector2i(rand()%N,rand()%N));
+  nodes.push_back(Vector2i(rand()%MAX_COLUMNS,rand()%MAX_COLUMNS));
 
   while(!nodes.empty())
   {
@@ -105,8 +105,8 @@ int netwalk()
 
     generatePuzzle();
 
-    for(int i=0;i<N;i++)
-     for(int j=0;j<N;j++)
+    for(int i=0;i<MAX_COLUMNS;i++)
+     for(int j=0;j<MAX_COLUMNS;j++)
        {
          pipe &p = grid[j][i];
 
@@ -123,7 +123,7 @@ int netwalk()
        }
 
     Vector2i servPos;
-    while(cell(servPos).dirs.size()==1) {servPos = Vector2i(rand()%N, rand()%N);}
+    while(cell(servPos).dirs.size()==1) {servPos = Vector2i(rand()%MAX_COLUMNS, rand()%MAX_COLUMNS);}
     sServer.setPosition(Vector2f(servPos*tsz));
     sServer.move(oset);
 
@@ -144,8 +144,8 @@ int netwalk()
                     cell(pos).orientation++;
                     cell(pos).rotate();
 
-                    for(int i=0;i<N;i++)
-                     for(int j=0;j<N;j++)
+                    for(int i=0;i<MAX_COLUMNS;i++)
+                     for(int j=0;j<MAX_COLUMNS;j++)
                       grid[j][i].on=0;
 
                     drop(servPos);
@@ -155,8 +155,8 @@ int netwalk()
         app.clear();
         app.draw(sBackground);
 
-        for(int i=0;i<N;i++)
-         for(int j=0;j<N;j++)
+        for(int i=0;i<MAX_COLUMNS;i++)
+         for(int j=0;j<MAX_COLUMNS;j++)
            {
             pipe &p = grid[j][i];
 
